@@ -4,7 +4,12 @@
 
     <div class="row">
         <div class="col">
-            <h1>List of Participants</h1>
+            <h1>
+                <a href="{{url('/participants/load')}}" class="btn btn-primary mt-2 float-right">
+                    <i class="fa fa-download"></i> Load Participants
+                </a>
+                List of Participants
+            </h1>
 
             <table class="table table-bordered table-striped">
                 <thead>

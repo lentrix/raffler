@@ -11,6 +11,6 @@ class ParticipantSeeder extends Seeder
      */
     public function run()
     {
-        factory('App\Participant', 50)->create();
+        factory('App\Participant', 10)->create();
     }
 }

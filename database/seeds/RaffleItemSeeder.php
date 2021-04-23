@@ -11,6 +11,6 @@ class RaffleItemSeeder extends Seeder
      */
     public function run()
     {
-        factory('App\RaffleItem', 20)->create();
+        factory('App\RaffleItem', 10)->create();
     }
 }

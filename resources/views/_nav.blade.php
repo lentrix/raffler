@@ -20,6 +20,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{url('/users')}}">Users</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{url('/logout')}}">Logout</a>
+            </li>
         @else
             <li class="nav-item">
             <a class="nav-link" href="{{url('/login')}}">Login</a>

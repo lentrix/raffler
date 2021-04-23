@@ -1926,6 +1926,43 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Raffle",
   data: function data() {
@@ -1933,7 +1970,11 @@ __webpack_require__.r(__webpack_exports__);
       test: "Sample",
       items: [],
       participants: [],
-      inclusive: false
+      exclusive: true,
+      showControls: false,
+      winner: null,
+      index: null,
+      drawBG: "bg-warning"
     };
   },
   methods: {
@@ -1947,13 +1988,54 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     getParticipants: function getParticipants() {
-      axios.get('/api/participants/' + this.inclusive).then(function (response) {
+      var _this2 = this;
+
+      axios.get('/api/participants/' + this.exclusive).then(function (response) {
         if (response.status == 200) {
-          console.log(response.data);
+          _this2.participants = response.data;
+          console.log('participants: ', response.data.length);
         }
       });
     },
-    draw: function draw() {}
+    pickAWinner: function pickAWinner(index) {
+      var _this3 = this;
+
+      this.showControls = false;
+      this.drawBG = "bg-warning";
+      var ln = this.participants.length;
+      this.index = index;
+
+      for (var i = 0; i < 20; i++) {
+        setTimeout(function () {
+          return _this3.winner = _this3.participants[Math.floor(Math.random() * ln)];
+        }, 150 * i);
+      }
+
+      setTimeout(function () {
+        _this3.showControls = true;
+        _this3.drawBG = "bg-confetti";
+      }, 150 * 21);
+    },
+    cancel: function cancel() {
+      this.winner = null;
+      this.index = null;
+      this.drawBG = "bg-warning";
+      this.showControls = false;
+    },
+    commit: function commit() {
+      var _this4 = this;
+
+      var item = this.items[this.index];
+      axios.patch('/api/items/commit/' + this.winner.id + "/" + item.id).then(function (response) {
+        if (response.status == 200) {
+          _this4.getAvailable();
+
+          _this4.getParticipants();
+
+          _this4.cancel();
+        }
+      });
+    }
   },
   created: function created() {
     this.getAvailable(), this.getParticipants();
@@ -1974,7 +2056,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n.list-group-item[data-v-06d510e6] {\n    cursor: pointer;\n}\n\n", ""]);
+exports.push([module.i, "\n.list-group-item[data-v-06d510e6] {\n  cursor: pointer;\n}\n#winner-box h3[data-v-06d510e6] {\n  margin: 0px;\n}\n.bg-confetti[data-v-06d510e6] {\n  background-image: url(\"https://i.pinimg.com/originals/12/4d/e3/124de3d1b5e12f1d8fcec1685e634361.gif\");\n  background-size: cover;\n}\n", ""]);
 
 // exports
 
@@ -20308,28 +20390,151 @@ var render = function() {
       _c("div", { staticClass: "col-md-4" }, [
         _c("h3", [_vm._v("Select a Raffle Item")]),
         _vm._v(" "),
+        _c("label", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.exclusive,
+                expression: "exclusive"
+              }
+            ],
+            attrs: { type: "checkbox" },
+            domProps: {
+              checked: Array.isArray(_vm.exclusive)
+                ? _vm._i(_vm.exclusive, null) > -1
+                : _vm.exclusive
+            },
+            on: {
+              change: [
+                function($event) {
+                  var $$a = _vm.exclusive,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = null,
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.exclusive = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.exclusive = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.exclusive = $$c
+                  }
+                },
+                function($event) {
+                  return _vm.getParticipants()
+                }
+              ]
+            }
+          }),
+          _vm._v(" Exclude Previous Winners")
+        ]),
+        _vm._v(" "),
         _c(
           "ul",
           { staticClass: "list-group" },
           _vm._l(_vm.items, function(item, index) {
             return _c(
               "li",
-              { key: index, staticClass: "list-group-item list-group-item-sm" },
+              {
+                key: index,
+                staticClass: "list-group-item list-group-item-sm",
+                on: {
+                  click: function($event) {
+                    return _vm.pickAWinner(index)
+                  }
+                }
+              },
               [
-                _vm._v("\n                    " + _vm._s(item.item) + " "),
+                _vm._v("\n          " + _vm._s(item.item) + " "),
                 _c("br"),
-                _vm._v("\n                    " + _vm._s(item.sponsor) + " "),
+                _vm._v("\n          " + _vm._s(item.sponsor) + " "),
                 _c("br"),
                 _vm._v(
-                  "\n                    worth " +
-                    _vm._s(item.value) +
-                    " pesos\n                "
+                  "\n          worth " + _vm._s(item.value) + " pesos\n        "
                 )
               ]
             )
           }),
           0
         )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-8" }, [
+        _vm.index != null
+          ? _c("p", [
+              _vm._v("\n        Draw for raffle item:\n        "),
+              _c("strong", { staticStyle: { "font-size": "1.2em" } }, [
+                _vm._v(
+                  _vm._s(_vm.items[_vm.index].item) +
+                    " from " +
+                    _vm._s(_vm.items[_vm.index].sponsor)
+                )
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _c("div", { staticClass: "card shadow", class: _vm.drawBG }, [
+          _c("div", { staticClass: "card-body" }, [
+            _vm.showControls
+              ? _c("h3", [_vm._v("Congratulations!!!")])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.winner != null
+              ? _c("div", { attrs: { id: "winner-box" } }, [
+                  _c("h1", [_vm._v(_vm._s(_vm.winner.full_name))]),
+                  _vm._v(" "),
+                  _c("h3", [_vm._v(_vm._s(_vm.winner.other_info))])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("hr"),
+            _vm._v(" "),
+            _vm.showControls
+              ? _c("div", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary btn-lg float-right",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.commit()
+                        }
+                      }
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-save" }),
+                      _vm._v(" Commit Winner\n            ")
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger btn-lg float-right mr-2",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.cancel()
+                        }
+                      }
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-trash-alt" }),
+                      _vm._v(" Cancel\n            ")
+                    ]
+                  )
+                ])
+              : _vm._e()
+          ])
+        ])
       ])
     ])
   ])

@@ -32,12 +32,33 @@ class ParticipantController extends Controller
         return redirect('/participants');
     }
 
+    public function loadForm() {
+        return view('participants.load');
+    }
+
+    public function load(Request $request) {
+        $file = $request->file('file');
+        $data = file_get_contents($file);
+        $data = json_decode($data);
+
+
+        foreach($data as $d) {
+            Participant::create([
+                'full_name' => $d->full_name,
+                'other_info' => $d->other_info
+            ]);
+        }
+
+        return redirect('/participants');
+    }
+
     /**
      * API Endpoints
      */
 
-    public function getParticipants(Bool $inclusive) {
-        if($inclusive) $participants = Participant::get();
+    public function getParticipants($exclusive) {
+
+        if($exclusive=="false") $participants = Participant::get();
         else $participants = Participant::whereDoesntHave('raffleItems')->get();
 
         return $participants;
