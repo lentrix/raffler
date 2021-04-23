@@ -18,7 +18,9 @@ class CreateRaffleItemsTable extends Migration
             $table->string("item");
             $table->string("sponsor");
             $table->decimal("value",8,2);
+            $table->bigInteger('participant_id')->unsigned()->nullable();
             $table->timestamps();
+            $table->foreign('participant_id')->references('id')->on('participants');
         });
     }
 

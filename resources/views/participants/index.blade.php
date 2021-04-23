@@ -11,6 +11,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Details</th>
+                        <th>&amp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -18,6 +19,11 @@
                     <tr>
                         <td>{{$part->full_name}}</td>
                         <td>{{$part->other_info}}</td>
+                        <td>
+                            <a href='{{url("/participants/$part->id")}}' class="btn btn-sm btn-info">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
